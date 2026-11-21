@@ -35,7 +35,7 @@ class GatherHarvestTests(unittest.TestCase):
                 (1, "gather", {"node_id": "N1", "kind": "bong_dien_dien", "amount": g["node_yield"]}),
             ])
             s1 = snapshots(rows)[1]
-            self.assertEqual(s1["hold"], ["bong_dien_dien"])
+            self.assertEqual([x["kind"] for x in s1["hold"]], ["bong_dien_dien"])
             self.assertEqual(s1["nodes"][0]["regrow_ticks"], int(round(g["regrow_s"] * 60)))
             self.assertFalse(s1["nodes"][0]["ready"])
 
@@ -89,7 +89,7 @@ class GatherHarvestTests(unittest.TestCase):
             sc = write_json(w.path("sc.json"), {
                 "gather": {
                     "player": {"pos": [20.0, 0.0]},
-                    "hold": ["ca_loc"] * cap,
+                    "hold": [{"id": f"I{i + 1}", "kind": "ca_loc", "fresh": 100} for i in range(cap)],
                     "nodes": [{"id": "N1", "kind": "bong_sung", "pos": [20.5, 0.0]}],
                     "fish": [],
                 }
@@ -111,7 +111,7 @@ class GatherHarvestTests(unittest.TestCase):
             sc = write_json(w.path("sc.json"), {
                 "gather": {
                     "player": {"pos": [2.0, 0.0]},
-                    "hold": ["ca_loc"],
+                    "hold": [{"id": "I1", "kind": "ca_loc", "fresh": 100}],
                     "nodes": [{"id": "N1", "kind": "bong_sung", "pos": [2.5, 0.0]}],
                     "fish": [],
                 }
@@ -123,7 +123,7 @@ class GatherHarvestTests(unittest.TestCase):
             evs = events(read_jsonl(w.path("o.jsonl")))
             self.assertEqual([e["name"] for e in evs], ["gather_end"])
             self.assertEqual(evs[0]["data"]["reason"], "docked")
-            self.assertEqual(evs[0]["data"]["inventory"]["items"], {"ca_loc": 1})
+            self.assertEqual([x["kind"] for x in evs[0]["data"]["inventory"]["items"]], ["ca_loc"])
 
     def test_catch_fish_underwater_cooldown_and_tie_break(self):
         """Bắt cá dưới nước đúng mép, hòa theo ID (F2 trước F10), đặt cooldown dùng lại ở t+L."""
@@ -159,7 +159,7 @@ class GatherHarvestTests(unittest.TestCase):
                 (cd + 1, "fish_caught", {"fish_id": "F10", "kind": "ca_loc", "yield": 1}),
             ])
             s_end = snapshots(rows)[-1]
-            self.assertEqual(s_end["hold"], ["ca_linh", "ca_linh", "ca_linh", "ca_loc"])
+            self.assertEqual([x["kind"] for x in s_end["hold"]], ["ca_linh", "ca_linh", "ca_linh", "ca_loc"])
             self.assertEqual(s_end["fish"], [])
 
     def test_catch_hold_full_keeps_fish_and_cooldown_and_no_fallback(self):
@@ -169,7 +169,7 @@ class GatherHarvestTests(unittest.TestCase):
             sc = write_json(w.path("sc.json"), {
                 "gather": {
                     "player": {"pos": [30.0, 10.0]},
-                    "hold": ["bong_sung"] * (cap - 2),  # còn 2 chỗ, không đủ cho ca_linh (cần 3)
+                    "hold": [{"id": f"I{i + 1}", "kind": "bong_sung", "fresh": 100} for i in range(cap - 2)],  # còn 2 chỗ, không đủ cho ca_linh (cần 3)
                     "nodes": [],
                     "fish": [
                         {"id": "F1", "kind": "ca_linh", "pos": [30.5, 10.0]},
@@ -230,9 +230,9 @@ class GatherHarvestTests(unittest.TestCase):
             evs = events(rows)
             self.assertEqual([e["name"] for e in evs], ["gather", "gather_end"])
             self.assertEqual(evs[-1]["data"]["reason"], "time")
-            self.assertEqual(evs[-1]["data"]["inventory"]["items"], {"bong_dien_dien": 1})
+            self.assertEqual([x["kind"] for x in evs[-1]["data"]["inventory"]["items"]], ["bong_dien_dien"])
             with open(inv, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": {"bong_dien_dien": 1}})
+                self.assertEqual([x["kind"] for x in json.load(f)["items"]], ["bong_dien_dien"])
 
         # 2) Cập bến đúng mép dock_radius ở bước cuối -> docked
         with Workdir() as w:
@@ -240,7 +240,7 @@ class GatherHarvestTests(unittest.TestCase):
             sc = write_json(w.path("sc.json"), {
                 "gather": {
                     "player": {"pos": [dx + g["dock_radius"], dd]},
-                    "hold": ["ca_loc"],
+                    "hold": [{"id": "I1", "kind": "ca_loc", "fresh": 100}],
                     "nodes": [],
                     "fish": [],
                     "time_left_ticks": 1,
@@ -252,7 +252,7 @@ class GatherHarvestTests(unittest.TestCase):
             self.assertEqual(code, 0, err)
             rows = read_jsonl(w.path("o.jsonl"))
             self.assertEqual(rows[-1]["reason"], "docked")
-            self.assertEqual(events(rows)[-1]["data"]["inventory"]["items"], {"ca_loc": 1})
+            self.assertEqual([x["kind"] for x in events(rows)[-1]["data"]["inventory"]["items"]], ["ca_loc"])
 
         # 3) Chạm tick_limit sớm -> giữ nguyên file kho đã có
         with Workdir() as w:

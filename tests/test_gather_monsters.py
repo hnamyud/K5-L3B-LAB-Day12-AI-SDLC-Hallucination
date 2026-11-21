@@ -38,12 +38,18 @@ class Monsters(unittest.TestCase):
     def test_hit_tie_lifo_and_recoil(self):
         rows, _ = self.run_case({
             "player": {"pos": [50, 20]}, "monsters": [monster("M10"), monster("M2")],
-            "hold": ["ca_loc", "bong_sung", "ca_linh", "ca_loc", "bong_sung"],
+            "hold": [
+                {"id": "I1", "kind": "ca_loc", "fresh": 100},
+                {"id": "I2", "kind": "bong_sung", "fresh": 100},
+                {"id": "I3", "kind": "ca_linh", "fresh": 100},
+                {"id": "I4", "kind": "ca_loc", "fresh": 100},
+                {"id": "I5", "kind": "bong_sung", "fresh": 100},
+            ],
         }, 61)
         hit = events(rows, "monster_hit")
         self.assertEqual(len(hit), 1)
         self.assertEqual(hit[0]["data"]["monster_id"], "M2")
-        self.assertEqual(hit[0]["data"]["lost"], ["bong_sung", "ca_loc"])
+        self.assertEqual([x["kind"] for x in hit[0]["data"]["lost"]], ["bong_sung", "ca_loc"])
         by_tick = {s["tick"]: s for s in snapshots(rows)}
         recoiling = by_tick[1]["monsters"][0]
         self.assertEqual((recoiling["state"], recoiling["state_ticks_left"]), ("recoil", 60))
@@ -55,25 +61,32 @@ class Monsters(unittest.TestCase):
     def test_monster_faint_loses_remainder_and_saves_empty_stock(self):
         rows, saved = self.run_case({
             "player": {"pos": [50, 20], "hp": 1}, "monsters": [monster()],
-            "hold": ["ca_loc", "bong_sung", "ca_linh"], "time_left_ticks": 1,
+            "hold": [
+                {"id": "I1", "kind": "ca_loc", "fresh": 100},
+                {"id": "I2", "kind": "bong_sung", "fresh": 100},
+                {"id": "I3", "kind": "ca_linh", "fresh": 100},
+            ],
+            "time_left_ticks": 1,
         })
         self.assertEqual([r["name"] for r in rows if r["type"] == "event"],
                          ["monster_hit", "faint", "gather_end"])
-        self.assertEqual(events(rows, "monster_hit")[0]["data"]["lost"], ["ca_linh"])
-        self.assertEqual(events(rows, "faint")[0]["data"],
-                         {"cause": "monster", "hp": 0, "lost": ["bong_sung", "ca_loc"]})
-        self.assertEqual(saved, {"items": {}})
+        self.assertEqual([x["kind"] for x in events(rows, "monster_hit")[0]["data"]["lost"]], ["ca_linh"])
+        faint_data = events(rows, "faint")[0]["data"]
+        self.assertEqual((faint_data["cause"], faint_data["hp"]), ("monster", 0))
+        self.assertEqual([x["kind"] for x in faint_data["lost"]], ["bong_sung", "ca_loc"])
+        self.assertEqual(saved, {"items": []})
         self.assertEqual(rows[-1]["reason"], "fainted")
 
     def test_choke_ignores_invulnerability_and_keeps_hold(self):
         rows, _ = self.run_case({
             "player": {"pos": [50, 20], "oxygen_ticks": 0,
                        "zero_oxy_ticks": 59, "invuln_ticks": 30},
-            "monsters": [monster()], "hold": ["ca_loc"],
+            "monsters": [monster()],
+            "hold": [{"id": "I1", "kind": "ca_loc", "fresh": 100}],
         })
         self.assertEqual(events(rows, "choke")[0]["data"], {"hp": 2})
         self.assertEqual(events(rows, "monster_hit"), [])
-        self.assertEqual(snapshots(rows)[-1]["hold"], ["ca_loc"])
+        self.assertEqual([x["kind"] for x in snapshots(rows)[-1]["hold"]], ["ca_loc"])
 
     def test_choke_precedes_hit_in_same_step(self):
         rows, _ = self.run_case({

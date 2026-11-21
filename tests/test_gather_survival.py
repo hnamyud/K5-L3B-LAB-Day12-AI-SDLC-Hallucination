@@ -46,20 +46,26 @@ class GatherSurvival(unittest.TestCase):
             rows, inventory = self.run_gather(
                 workdir,
                 {"player": {"pos": [2, 1], "hp": 1, "oxygen_ticks": 0, "zero_oxy_ticks": 59},
-                 "hold": ["ca_loc", "bong_sung", "ca_linh"], "time_left_ticks": 1},
+                 "hold": [
+                     {"id": "I1", "kind": "ca_loc", "fresh": 100},
+                     {"id": "I2", "kind": "bong_sung", "fresh": 100},
+                     {"id": "I3", "kind": "ca_linh", "fresh": 100},
+                 ],
+                 "time_left_ticks": 1},
                 frames({"tick": 0, "interact": True}), 2,
             )
             with open(inventory, encoding="utf-8") as saved:
-                self.assertEqual(json.load(saved), {"items": {}})
+                self.assertEqual(json.load(saved), {"items": []})
         self.assertEqual(
             [row["name"] for row in rows if row["type"] == "event"],
             ["choke", "faint", "gather_end"],
         )
-        self.assertEqual(events(rows, "faint")[0]["data"], {
-            "cause": "choke", "lost": ["ca_linh", "bong_sung", "ca_loc"], "hp": 0,
-        })
+        faint_data = events(rows, "faint")[0]["data"]
+        self.assertEqual(faint_data["cause"], "choke")
+        self.assertEqual(faint_data["hp"], 0)
+        self.assertEqual([x["kind"] for x in faint_data["lost"]], ["ca_linh", "bong_sung", "ca_loc"])
         self.assertEqual(events(rows, "gather_end")[0]["data"], {
-            "reason": "fainted", "inventory": {"items": {}},
+            "reason": "fainted", "inventory": {"items": []},
         })
         self.assertEqual(snapshots(rows)[-1]["hold"], [])
         self.assertEqual((rows[-1]["ticks"], rows[-1]["reason"]), (1, "fainted"))

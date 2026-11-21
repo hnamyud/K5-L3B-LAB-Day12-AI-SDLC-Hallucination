@@ -1,12 +1,13 @@
 import unittest
 import math
 from chonoi.contract import load_contract
+from chonoi.inventory import is_v12
 from chonoi.runner import Session
 from chonoi.inputs import LiveInputs
 
-# Phase 3 (Test Contract v1.2): giỏ là mảng cá thể {id,kind,fresh}. Test giữ nguyên ý kiểm P1 cho cả hai
+# Phase 3 (Test Contract v1.2+): giỏ là mảng cá thể {id,kind,fresh}. Test giữ nguyên ý kiểm P1 cho cả hai
 # phiên bản: fixture dựng theo version đang bật, so sánh theo loại nguyên liệu.
-V12 = load_contract()["contract_version"] == "1.2"
+V12 = is_v12(load_contract()["contract_version"])
 
 
 def hold_fixture(*kinds):

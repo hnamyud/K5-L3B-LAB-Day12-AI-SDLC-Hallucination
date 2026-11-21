@@ -150,7 +150,10 @@ class GatherFishPhase2Tests(unittest.TestCase):
             sc = write_json(w.path("sc.json"), {
                 "gather": {
                     "player": {"pos": [76.0, 0.0]},
-                    "hold": ["ca_keo", "ca_keo"],
+                    "hold": [
+                        {"id": "I1", "kind": "ca_keo", "fresh": 100},
+                        {"id": "I2", "kind": "ca_keo", "fresh": 100},
+                    ],
                     "random_fish": False,
                 }
             })
@@ -159,10 +162,17 @@ class GatherFishPhase2Tests(unittest.TestCase):
             code, err = run_headless("--mode", "gather", "--seed", "1", "--ticks", "1", "--scenario", sc,
                                      "--inputs", inp, "--out", w.path("g1.jsonl"))
             self.assertEqual(code, 0, err)
-            self.assertEqual(snapshots(read_jsonl(w.path("g1.jsonl")))[-1]["hold"], ["ca_keo", "ca_keo", "keo_neo"])
+            self.assertEqual(
+                [x["kind"] for x in snapshots(read_jsonl(w.path("g1.jsonl")))[-1]["hold"]],
+                ["ca_keo", "ca_keo", "keo_neo"],
+            )
 
             sc_dock = write_json(w.path("dock.json"), {
-                "gather": {"hold": ["ca_keo", "ca_keo", "keo_neo"], "random_fish": False}
+                "gather": {"hold": [
+                    {"id": "I1", "kind": "ca_keo", "fresh": 100},
+                    {"id": "I2", "kind": "ca_keo", "fresh": 100},
+                    {"id": "I3", "kind": "keo_neo", "fresh": 100},
+                ], "random_fish": False}
             })
             inv = w.path("inv.json")
             code, err = run_headless("--mode", "gather", "--seed", "1", "--ticks", "1", "--scenario", sc_dock,
@@ -172,4 +182,7 @@ class GatherFishPhase2Tests(unittest.TestCase):
                                      "--out", w.path("q.jsonl"))
             self.assertEqual(code, 0, err)
             q0 = snapshots(read_jsonl(w.path("q.jsonl")))[0]
-            self.assertEqual(q0["stock"], {"ca_keo": 2, "keo_neo": 1})
+            self.assertEqual(
+                [(x["id"], x["kind"]) for x in q0["stock"]],
+                [("I1", "ca_keo"), ("I2", "ca_keo"), ("I3", "keo_neo")],
+            )

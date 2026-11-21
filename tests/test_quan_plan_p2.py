@@ -10,7 +10,7 @@ from helpers import Workdir, events, read_jsonl, run_headless, snapshots, write_
 class DayPlanData(unittest.TestCase):
     def test_contract_has_six_dishes_two_stoves_four_tables(self):
         c = load_contract()
-        self.assertEqual(c["contract_version"], "1.1")
+        self.assertIn(c["contract_version"], ("1.1", "1.2", "1.3"))
         menu = c["tuning"]["menu"]
         self.assertEqual(set(menu), {
             "ca_loc_nuong_trui", "goi_bong_sung", "lau_ca_linh_dien_dien",

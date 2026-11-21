@@ -8,11 +8,12 @@ import urllib.request
 
 from chonoi.contract import load_contract
 from chonoi.inputs import LiveInputs
+from chonoi.inventory import is_v12
 from chonoi.live import LIVE_BUTTONS, LiveGame, LiveServer
 from chonoi.live_day import INTRO_AUTO_TICKS, LiveDaySession, usable_counts
 
-# Phase 3: fixture theo version manifest (v1.1 mảng kind, v1.2 mảng cá thể); so sánh kho qua usable_counts.
-V12 = load_contract()["contract_version"] == "1.2"
+# Phase 3: fixture theo version manifest (v1.1 mảng kind, v1.2+ mảng cá thể); so sánh kho qua usable_counts.
+V12 = is_v12(load_contract()["contract_version"])
 
 
 def hold_fixture(*kinds):

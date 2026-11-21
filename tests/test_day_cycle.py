@@ -24,14 +24,21 @@ class DayCycle(unittest.TestCase):
             return read_jsonl(out)
 
     def test_one_day_default_waits_for_shop_timeout(self):
-        scenario = {"gather": {"hold": ["ca_loc", "ca_keo", "keo_neo"]}, "quan": {"time_left_ticks": 1}}
+        scenario = {"gather": {"hold": [
+            {"id": "I1", "kind": "ca_loc", "fresh": 100},
+            {"id": "I2", "kind": "ca_keo", "fresh": 100},
+            {"id": "I3", "kind": "keo_neo", "fresh": 100},
+        ]}, "quan": {"time_left_ticks": 1}}
         inputs = [{"tick": 0, "interact": True}]
         rows = self.play(scenario, inputs, ticks=2)
         states = snapshots(rows)
         self.assertEqual([(s["phase"], s["phase_tick"]) for s in states],
                          [("gather", 0), ("quan", 0), ("shop", 0)])
         self.assertEqual(states[1]["stock"], events(rows, "gather_end")[0]["data"]["inventory"]["items"])
-        self.assertEqual(states[2]["stock"], states[1]["stock"])
+        self.assertEqual(
+            [(x["id"], x["kind"]) for x in states[2]["stock"]],
+            [(x["id"], x["kind"]) for x in states[1]["stock"]],
+        )
         self.assertEqual(rows[-1]["days_completed"], 0)
         rows = self.play(scenario, inputs)
         self.assertEqual([(r["tick"], r["phase"], r["name"]) for r in events(rows)], [
@@ -112,13 +119,13 @@ class DayCycle(unittest.TestCase):
         plan = {"day": 1, "dishes": {"lau_mam": 1}}
         scenario = {"day": {"day_plan": [plan]}, "gather": {
             "player": {"pos": [15, 5], "oxygen_ticks": 0, "zero_oxy_ticks": 59, "hp": 1},
-            "hold": ["ca_loc"]}}
+            "hold": [{"id": "I1", "kind": "ca_loc", "fresh": 100}]}}
         rows = self.play(scenario, ticks=4)
         self.assertEqual(events(rows, "gather_end")[0]["data"]["reason"], "fainted")
-        self.assertEqual(snapshots(rows)[1]["stock"], {})
+        self.assertEqual(snapshots(rows)[1]["stock"], [])
         plan_event = events(rows, "day_plan")[0]["data"]
         self.assertEqual(plan_event["ingredients"], {"ca_linh": 2, "ca_keo": 1, "keo_neo": 1, "bong_dien_dien": 1})
-        scenario["gather"] = {"hold": ["ca_loc"], "time_left_ticks": 1}
+        scenario["gather"] = {"hold": [{"id": "I1", "kind": "ca_loc", "fresh": 100}], "time_left_ticks": 1}
         rows = self.play(scenario, ticks=121)
         self.assertEqual(len(events(rows, "no_dish")), 1)
         self.assertEqual(events(rows, "customer_arrived"), [])
