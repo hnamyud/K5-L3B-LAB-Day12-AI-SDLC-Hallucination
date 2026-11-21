@@ -10,7 +10,7 @@ import math
 
 from .errors import BadInput
 from .freshness import validate_units
-from .inventory import KINDS_P2, validate_items
+from .inventory import KINDS_P2, is_v12, validate_items
 
 GATHER_KEYS = {"player", "hold", "nodes", "fish", "random_fish", "time_left_ticks", "monsters"}
 GATHER_PLAYER_KEYS = {"pos", "vel", "heading_deg", "hp", "oxygen_ticks", "zero_oxy_ticks",
@@ -110,7 +110,7 @@ def _validate_gather(b, tuning):
             raise BadInput("hold phải là mảng")
         if len(h) > g["hold_capacity"]:
             raise BadInput("hold vượt sức chứa")
-        if tuning.get("freshness") and tuning.get("_contract_version", "1.2") == "1.2":
+        if tuning.get("freshness") and is_v12(tuning.get("_contract_version", "1.2")):
             seen_hold = set()
             for idx, item in enumerate(h):
                 if not isinstance(item, dict) or set(item) != {"id", "kind", "fresh"}:

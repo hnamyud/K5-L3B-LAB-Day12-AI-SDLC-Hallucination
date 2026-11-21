@@ -32,6 +32,24 @@ from helpers import ROOT, Workdir, write_json
 
 
 class InventoryV12Tests(unittest.TestCase):
+    def test_v13_reissues_item_ids_across_days(self):
+        from chonoi.inputs import InputPlayer
+        from chonoi.runner import Session
+
+        tuning = dict(load_contract()["tuning"], _contract_version="1.3")
+        scenario = {
+            "gather": {"hold": [{"id": "I10", "kind": "ca_loc", "fresh": 80}],
+                       "random_fish": False, "monsters": [], "time_left_ticks": 1},
+            "quan": {"random_customers": False, "time_left_ticks": 1},
+        }
+        session = Session("day", tuning, scenario, 1, days=2)
+        inputs = InputPlayer([{"tick": 2, "shop_done": True}], buttons=("shop_done",))
+        for tick in range(3):
+            session.step(inputs.advance(tick))
+        state = session.snapshot()
+        self.assertEqual((state["day"], state["phase"]), (2, "gather"))
+        self.assertEqual(state["hold"], [{"id": "I11", "kind": "ca_loc", "fresh": 80}])
+
     def test_adjacent_floats_preserve_spoilage_and_price_branches(self):
         below = math.nextafter(30.0, 0.0)
         above = math.nextafter(30.0, 100.0)
@@ -58,7 +76,7 @@ class InventoryV12Tests(unittest.TestCase):
         individuals = {"hold": [{"id": "I1", "kind": "ca_loc", "fresh": 30}],
                        "monsters": [], "random_fish": False}
         with Workdir() as work:
-            for version, fixture in (("1.1", legacy), ("1.2", individuals)):
+            for version, fixture in (("1.1", legacy), ("1.2", individuals), ("1.3", individuals)):
                 contract["contract_version"] = version
                 path = write_json(work.path("contract.json"), contract)
                 tuning = load_contract(path)["tuning"]
@@ -67,7 +85,7 @@ class InventoryV12Tests(unittest.TestCase):
                     _validate_gather(individuals if version == "1.1" else legacy, tuning)
                 sim = GatherSim(tuning, fixture, Streams(1), IdAllocator())
                 emitted = sim.step(InputState((0, 0), {}, set()))
-                self.assertEqual(any(name == "spoiled" for name, _ in emitted), version == "1.2")
+                self.assertEqual(any(name == "spoiled" for name, _ in emitted), is_v12(version))
 
     def test_contract_has_freshness_and_validates_bounds(self):
         contract = load_contract()
@@ -100,6 +118,20 @@ class InventoryV12Tests(unittest.TestCase):
             p = write_json(w.path("contract.json"), bad_contract)
             with self.assertRaises(BadInput):
                 load_contract(p)
+
+            v13_contract = copy.deepcopy(contract)
+            v13_contract["contract_version"] = "1.3"
+            v13_contract["bench_cmd"] = "python3 -m chonoi.bench"
+            v13_contract["soak_cmd"] = "python3 -m chonoi.soak"
+            p13 = write_json(w.path("contract_v13.json"), v13_contract)
+            self.assertEqual(load_contract(p13)["contract_version"], "1.3")
+
+            for bad_cmd_key in ("bench_cmd", "soak_cmd"):
+                bad_v13 = copy.deepcopy(v13_contract)
+                bad_v13[bad_cmd_key] = "   "
+                pb = write_json(w.path(f"bad_{bad_cmd_key}.json"), bad_v13)
+                with self.assertRaises(BadInput):
+                    load_contract(pb)
 
     def test_v12_roundtrip_id_sort_and_atomic_write(self):
         with Workdir() as w:
@@ -302,6 +334,7 @@ class InventoryV12Tests(unittest.TestCase):
             validate_item_list([{"id": "I1", "kind": "ca_linh", "fresh": 100}], seen_ids=seen)
 
     def test_headless_cli_v11_inventory_still_works(self):
+        ver = load_contract().get("contract_version", "1.1")
         with Workdir() as w:
             inv = write_json(w.path("inv.json"), {"items": {"ca_loc": 1}})
             out = w.path("quan.jsonl")
@@ -310,7 +343,10 @@ class InventoryV12Tests(unittest.TestCase):
                  "--ticks", "1", "--inventory", inv, "--out", out],
                 cwd=ROOT, capture_output=True, text=True,
             )
-            self.assertEqual(r.returncode, 0, r.stderr)
+            if is_v12(ver):
+                self.assertEqual(r.returncode, 2, r.stderr)
+            else:
+                self.assertEqual(r.returncode, 0, r.stderr)
 
 
 if __name__ == "__main__":

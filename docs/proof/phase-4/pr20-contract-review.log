@@ -1,0 +1,17 @@
+test_adjacent_floats_preserve_spoilage_and_price_branches (test_inventory_v12.InventoryV12Tests.test_adjacent_floats_preserve_spoilage_and_price_branches) ... ok
+test_contract_has_freshness_and_validates_bounds (test_inventory_v12.InventoryV12Tests.test_contract_has_freshness_and_validates_bounds) ... ok
+test_contract_version_selects_gather_schema_with_freshness_config_present (test_inventory_v12.InventoryV12Tests.test_contract_version_selects_gather_schema_with_freshness_config_present) ... ok
+test_decay_preserves_lifo_order_and_sorts_spoiled_by_id_key (test_inventory_v12.InventoryV12Tests.test_decay_preserves_lifo_order_and_sorts_spoiled_by_id_key) ... ok
+test_freshness_decay_threshold_30_and_roundtrip_precision (test_inventory_v12.InventoryV12Tests.test_freshness_decay_threshold_30_and_roundtrip_precision) ... ok
+test_headless_cli_v11_inventory_still_works (test_inventory_v12.InventoryV12Tests.test_headless_cli_v11_inventory_still_works) ... ok
+test_id_allocator_and_make_item_continue_after_deletion (test_inventory_v12.InventoryV12Tests.test_id_allocator_and_make_item_continue_after_deletion) ... ok
+test_selection_pricing_tip_and_cook_order (test_inventory_v12.InventoryV12Tests.test_selection_pricing_tip_and_cook_order) ... ok
+test_v12_rejects_invalid_schemas_and_keeps_v11_compatibility (test_inventory_v12.InventoryV12Tests.test_v12_rejects_invalid_schemas_and_keeps_v11_compatibility) ... ok
+test_v12_roundtrip_id_sort_and_atomic_write (test_inventory_v12.InventoryV12Tests.test_v12_roundtrip_id_sort_and_atomic_write) ... ok
+test_v12_sample_fixture_is_valid (test_inventory_v12.InventoryV12Tests.test_v12_sample_fixture_is_valid) ... ok
+test_v13_reissues_item_ids_across_days (test_inventory_v12.InventoryV12Tests.test_v13_reissues_item_ids_across_days) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 1.036s
+
+OK

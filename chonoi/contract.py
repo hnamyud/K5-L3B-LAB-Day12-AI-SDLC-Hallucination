@@ -25,8 +25,11 @@ def load_contract(path=DEFAULT_PATH) -> dict:
     except (OSError, ValueError) as e:
         raise BadInput(f"không đọc được {path}: {e}")
     ver = c.get("contract_version")
-    if ver is not None and ver not in ("1.0", "1.1", "1.2"):
+    if ver is not None and ver not in ("1.0", "1.1", "1.2", "1.3"):
         raise BadInput(f"contract_version không hỗ trợ: {ver!r}")
+    for key in ("bench_cmd", "soak_cmd"):
+        if key in c and (not isinstance(c[key], str) or not c[key].strip()):
+            raise BadInput(f"{key} phải là chuỗi lệnh khác rỗng")
     validate_tuning(c.get("tuning"))
     # Truyền version tới sim/scenario mà không đổi manifest trên đĩa.
     c["tuning"]["_contract_version"] = ver or "1.1"
