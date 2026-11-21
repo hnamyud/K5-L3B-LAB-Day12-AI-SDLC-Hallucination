@@ -4,7 +4,7 @@
 
 | Thành viên | GitHub handle | Module chính | Vai quy trình | Người dự phòng cho |
 |---|---|---|---|---|
-| Hoàng Nam | hnamyud | `sim/gather` | PO, Integrator (Lát 1) | TV2 |
+| Nguyễn Phan Tuấn Đức | tundut | `sim/gather` | PO, Integrator (Lát 1) | TV2 |
 | Nguyễn Duy Mạnh | nguyenduymanh | `sim/gather` | Developer (Lát 2) | TV1 |
 | Huỳnh Văn Cường | cuong-huynh | `sim/quan` | Developer (Lát 3 / TV3) | TV4 |
 | Thành viên 4 | member4 | `sim/quan` | Developer (Lát 4) | TV3 |

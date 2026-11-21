@@ -1,4 +1,4 @@
-# nguyenduymanh — phản tư cá nhân (TV2)
+# tundut — phản tư cá nhân (TV2)
 
 - **Tôi đã làm:**
   - **Phase 1 (`dcf5b50`):** Hoàn thiện hái nút, bắt cá, cooldown, hòa ID (`_nearest_in_radius`, `_harvest`, `_catch`) trong `chonoi/sim/gather.py` và 9 test biên trong `tests/test_gather_harvest.py`.
