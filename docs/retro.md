@@ -29,3 +29,11 @@
 - **Điều tốt:** checkpoint chạy bằng CLI trên bản sao bật 1.2 nên kiểm được v1.2 khi manifest chưa bật mà không đụng file của TV1; HUD làm từ snapshot mẫu trước, ghép sim thật chỉ phải nới bố cục.
 - **Điều tệ (rút ra từ lần đổi kho):** đổi schema kho làm vỡ fixture ở 9 file test của 4 người; các lát tự đạt test của mình trên 1.1 nên tới cuối phase mới thấy 18 test hỏng khi bật 1.2.
 - **1 hành động cho Phase 4:** khi đổi hợp đồng dữ liệu, TV5 chạy `qa_p3.py` (CP8b — suite trên bản bật version mới) ngay phút 20 và gửi danh sách test hỏng theo chủ lát vào standup. **Người nhận: TV5 (Vũ Xuân Bách).**
+
+## Ghi nhận Phase 4 · TV5
+
+- **Rà lại hành động Phase 2 & Phase 3:** Bảng chủ sở hữu file và phân tách trách nhiệm được duy trì triệt để. TV5 phụ trách toàn diện Accessibility (High Contrast) và 3 Cảnh báo trực quan (AC-P4-03) trên Web Client, độc lập với các lát `soak` (TV2) và `bench` (TV3).
+- **Điều tốt:** Kiến trúc phân tách giao diện người dùng theo chuẩn web semantics và snapshot rendering giúp thêm chế độ Tương phản cao toàn diện (WCAG AAA) mà không ảnh hưởng bất kỳ luồng xử lý tick nào của engine headless. Toàn bộ 124 unit test hồi quy P1–P3 đạt 100% xanh (`Ran 124 tests in 7.894s - OK`).
+- **Điều tệ:** Môi trường sandbox chặn loopback socket connection khiến kiểm thử `test_live.py` cần gắn cờ cấp quyền socket mạng cục bộ.
+- **Một lần AI sai và cách nhóm phát hiện:** AI gán phím tắt `H` đè lên phím ẩn hướng dẫn của Phase 3 khiến không bật được tương phản cao khi đang xem tutorial. TV5 phát hiện khi rà soát bàn phím và kiểm thử trực tiếp trên trình duyệt, đã chủ động đổi phím hướng dẫn sang `T` (Tutorial) và nhường `H` (High Contrast) cho trợ năng, đồng thời bổ sung các nút bấm chuột trực quan trên Menu, Pause và Settings.
+- **Nếu làm lại, đổi gì:** Xây dựng một module quản lý phím tắt tập trung (`input_shortcuts.js`) có kiểm tra xung đột phím ngay từ Phase 1 thay vì xử lý rải rác trong `keydown`.
