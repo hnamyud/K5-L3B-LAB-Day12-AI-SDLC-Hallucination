@@ -7,8 +7,8 @@
 | Hoàng Nam | hnamyud | `sim/gather` | PO, Integrator (Lát 1) | TV2 |
 | Nguyễn Duy Mạnh | nguyenduymanh | `sim/gather` | Developer (Lát 2) | TV1 |
 | Huỳnh Văn Cường | cuong-huynh | `sim/quan` | Developer (Lát 3 / TV3) | TV4 |
-| Thành viên 4 | member4 | `sim/quan` | Developer (Lát 4) | TV3 |
-| Vũ Xuân Bách | bachvx1709 | `client/ui` | QA Lead, Release (Lát 5) | TV3 |
+| Đỗ Triệu Đức Phương | dotrieuducphuong | `sim/quan` | Developer (Lát 4) | TV3 |
+| Vũ Xuân Bách | bach | `client/ui` | QA Lead, Release (Lát 5) | TV3 |
 
 **Vai quy trình:** PO (đầu mối hỏi giảng viên, giữ `docs/clarify.md`) · Integrator (giữ `docs/contracts/`, gắn tag) · QA lead · Scrum/Release. Có thể kiêm.
 

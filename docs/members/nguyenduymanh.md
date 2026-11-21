@@ -1,8 +1,5 @@
+# Phản tư cá nhân của TV1 (`nguyenduymanh`)
 
-## Phase 2 · TV1
+Tôi làm trưởng nhóm và tích hợp (TV1) qua bốn phase. Ở Phase 1, tôi làm sinh tồn ca sáng (`dive`, `surface`, oxy, `choke`, `faint` bỏ giỏ LIFO, kho rỗng) cùng 3 test headless ở commit `c8da6f5` ([proof](../proof/phase-1/tv1-gather-survival.md)). Ở Phase 2, tôi làm Cá Sấu Năm Chèo (`patrol`, `chase`, `recoil`), bất tử 90 tick, rơi `floor(n/2)` LIFO, M2 từ D3 và 9 test tại `PR #8` ([proof](../proof/phase-2/tv1-monsters.md)). Sang Phase 3, tôi viết schema kho cá thể v1.2, adapter `Fraction` lưới `1/240`, `tuning.freshness`, `docs/contracts/phase-3.md` và `test_inventory_v12.py` ở `PR #16` ([proof](../proof/phase-3/tv1-inventory-v12.md)). Phase 4, tôi chia việc trong `docs/phan-cong.md`, làm `LICENSE`, `CREDITS.md`, `CHANGELOG.md` và release notes.
 
-- Đã triển khai Cá Sấu, va chạm, ngất, kiểm tra fixture và test headless. [Bằng chứng](../proof/phase-2/tv1-monsters.md)
-- Review trong phiên tập trung vào thứ tự ngạt → hit → tương tác → hết giờ và ranh giới recoil. Thay đổi đang ở workspace, chưa có commit bàn giao.
-- Khi kiểm code do AI tạo, dùng fixture trùng tâm và giỏ lẻ để xác nhận +x và chia lost giữa hai sự kiện. Chưa ghi nhận lỗi test sau lần chạy suite.
-- Học được cách kiểm số bước bằng snapshot tại tick 1, 60, 61 và giữ quyền sở hữu vòng tick khi nhiều người cùng sửa gather.
-- Cần phối hợp TV4 kiểm vòng ngày, cấp nâng cấp và mở quán sau ngất trước khi nghiệm thu toàn phase.
+Trong nhóm, tôi giữ hợp đồng P1 đến P3, xử lý conflict PR #5 trên `gather.py` và `quan.py`, review và merge PR cho TV2 đến TV5. Khi kiểm tra code AI viết ở Phase 3, tôi gặp lỗi gọi nhầm `w.dir` trên `Workdir` và nguy cơ lệch 1 tick ở ngưỡng `30` qua JSON; tôi sửa lại và xác minh bằng `unittest` cùng `Fraction`. Bài học chính là chốt schema, giữ tương thích song song `v1.1` và `v1.2` để cả nhóm làm độc lập.
