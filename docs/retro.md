@@ -6,11 +6,13 @@
 - 1 hành động cho Phase 3: mỗi file dùng chung (`live.py`, `runner.py`, `game.contract.json`) có một chủ duy nhất ghi trong `docs/phan-cong.md`; người khác sửa qua PR nhỏ có tag chủ file review. **Người nhận: TV5 (Vũ Xuân Bách)** cập nhật bảng chủ file đầu Phase 3 và nhắc trong standup phút 20.
 
 ## Phase 4 (cuối)
-- Rà lại hành động Phase 2: đã làm chưa? vì sao?
-- Điều tốt / điều tệ:
-- Số liệu: số commit theo người, cách đọc code của nhau, token theo người:
-- Một lần AI sai và cách nhóm phát hiện:
-- Nếu làm lại, đổi gì:
+
+- **Rà hành động Phase 2.** Phase 3 đã ghi rõ người sở hữu kho, vòng tick của quán và UI. TV5 ghi nhận lần gộp nhánh của mình không có xung đột code. TV4 ghép thử hai đầu gather/quán rồi kiểm riêng phần bếp và vòng ngày. [Phân công Phase 3](phan-cong.md#phase-3--mùa-nước-nổi--35-phút) · [Ghi nhận TV5](#ghi-nhận-phase-3--tv5)
+- **Điều tốt.** Fixture và log headless giúp rà cả thứ tự chuyển pha, giá đã chốt và ID xuyên ngày. Ca cá lóc fresh 50,25 sau 60 bước từng cho giá 29 thay vì 30. Sau khi nhóm ghép bản sửa độ chính xác, log review PR #17 ghi ca này đạt. [Bằng chứng TV4](proof/phase-3/tv4-bep-vong-ngay.md) · [Log review](proof/phase-3/pr17-review.log)
+- **Điều cần cải thiện.** Suite Phase 3 trên manifest 1.1 đạt, nhưng checkpoint CP8b ghi nhận 18 test còn lỗi khi bật 1.2, trong đó có fixture vòng ngày dùng kho đếm. Việc chạy regression trên phiên bản đích cần diễn ra ngay khi hai đầu dùng được schema mới. [Ma trận Phase 3](verification/phase-3.md)
+- **Số liệu tại `9901587`.** `git shortlog -sn --no-merges 9901587` đếm theo tên tác giả Git: Nekko 11, Hai Duong 9, bachvx1709 4, ducphuong2005 4, cuong-huynh 3, tundut 3. Nhóm đối chiếu diff và chạy lại fixture qua CLI khi ghép. Nhật ký ghi khoảng 18.000 token cho TV5 ở Phase 1. TV4 chưa đo token và chi phí. [Log review](proof/phase-3/pr17-review.log) · [Nhật ký AI](ai-usage-log.md)
+- **Một lỗi AI và cách phát hiện.** Khi cập nhật smoke test cho v1.1, Codex đặt dấu hai chấm sau chú thích ở dòng `for`. `unittest discover` báo lỗi cú pháp khi nạp file. Sửa xong, chạy lại toàn suite đạt 68/68 tại lần bàn giao TV4 Phase 2. [Nhật ký AI Phase 2](ai-usage-log.md) · [Bằng chứng](proof/phase-2/tv4-vong-ngay.md)
+- **Nếu làm lại.** Ngay khi đổi schema, TV4 bàn giao fixture tích hợp cho TV5 chạy ở mốc giữa phase. Fixture cần đi qua gather → quan → Shop → ngày kế, kiểm giá ở biên làm tròn và chạy cùng regression trên phiên bản đích. Ghi mỗi ca lỗi kèm chủ lát vào standup.
 
 ## Ghi nhận Phase 2 · TV1
 
