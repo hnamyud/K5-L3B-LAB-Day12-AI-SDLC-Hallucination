@@ -1,0 +1,22 @@
+test_headless_day_still_caps_at_5_and_soak_rejects_zero_days (tests.test_soak_p4.SoakPhase4Tests.test_headless_day_still_caps_at_5_and_soak_rejects_zero_days)
+headless --mode day giữ nguyên giới hạn 1..5; soak --days 0 trả mã 2. ... ok
+test_soak_10_days_cli_and_schema (tests.test_soak_p4.SoakPhase4Tests.test_soak_10_days_cli_and_schema)
+Chạy CLI --seed 7 --days 10: đủ 5 trường, days_completed=10, crashes=0. ... ok
+test_soak_deterministic_same_seed (tests.test_soak_p4.SoakPhase4Tests.test_soak_deterministic_same_seed)
+Cùng seed cho kết quả gameplay giống nhau hoàn toàn. ... ok
+test_hp_upgrade_levels_and_income_carry (tests.test_day_cycle.DayCycle.test_hp_upgrade_levels_and_income_carry) ... ok
+test_invalid_day_data_and_inconsistent_real_stock (tests.test_day_cycle.DayCycle.test_invalid_day_data_and_inconsistent_real_stock) ... ok
+test_one_day_default_waits_for_shop_timeout (tests.test_day_cycle.DayCycle.test_one_day_default_waits_for_shop_timeout) ... ok
+test_pause_on_both_standalone_modes (tests.test_day_cycle.DayCycle.test_pause_on_both_standalone_modes) ... ok
+test_pause_updates_edges_and_discards_buy (tests.test_day_cycle.DayCycle.test_pause_updates_edges_and_discards_buy) ... ok
+test_plan_override_faint_and_dish_filter (tests.test_day_cycle.DayCycle.test_plan_override_faint_and_dish_filter) ... ok
+test_two_days_exact_price_last_tick_and_upgrade_takes_effect_next_day (tests.test_day_cycle.DayCycle.test_two_days_exact_price_last_tick_and_upgrade_takes_effect_next_day) ... ok
+test_day_preserves_stock_and_reissues_ids_after_consumption (tests.test_tv4_freshness_p3.FreshDay.test_day_preserves_stock_and_reissues_ids_after_consumption) ... ok
+test_consume_only_reserved_items_and_keep_the_price_through_payment (tests.test_tv4_freshness_p3.FreshKitchen.test_consume_only_reserved_items_and_keep_the_price_through_payment) ... ok
+test_decay_to_exact_price_boundary_before_cooking (tests.test_tv4_freshness_p3.FreshKitchen.test_decay_to_exact_price_boundary_before_cooking) ... ok
+test_floor_with_average_just_below_boundary (tests.test_tv4_freshness_p3.FreshKitchen.test_floor_with_average_just_below_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 4.605s
+
+OK

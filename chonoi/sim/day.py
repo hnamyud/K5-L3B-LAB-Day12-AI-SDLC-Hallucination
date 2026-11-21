@@ -95,6 +95,9 @@ class DaySim:
         self.shift = GatherSim(tuning, fixture, self.streams, self.ids, day=self.day)
         self.shift.reputation = self.reputation
 
+    def _plan(self):
+        return self.plans.get(self.day) or self.plans[(self.day - 1) % len(self.plans) + 1]
+
     def start_quan(self):
         fixture = deepcopy(self.scenario.get("quan", {}))
         for customer in fixture.get("customers", []):
@@ -103,7 +106,7 @@ class DaySim:
                 if any(not isinstance(iid, str) or not iid for iid in reserved):
                     raise BadInput("quan.customers[].reserved cần id cá thể khác rỗng")
                 customer["reserved"] = [self.fixture_item_ids.get(iid, iid) for iid in reserved]
-        dishes = self.plans[self.day]["dishes"]
+        dishes = self._plan()["dishes"]
         menu = {dish: self.tuning["menu"][dish] for dish in dishes}
         tuning = dict(self.tuning, menu=menu)
         self.shift = QuanSim(tuning, fixture, self.streams, self.ids,
@@ -126,11 +129,11 @@ class DaySim:
                 result = {"stock": {k: v for k, v in sorted(stock.items()) if v > 0}}
         else:
             result = self.shift.snapshot()
-        return dict(result, day=self.day, day_plan=self.plans[self.day],
+        return dict(result, day=self.day, day_plan=self._plan(),
                     upgrades=dict(self.upgrades), active_upgrades=dict(self.active_upgrades))
 
     def day_start_events(self):
-        return [("day_start", {}), ("day_plan", self.plans[self.day]), ("phase_start", {})]
+        return [("day_start", {}), ("day_plan", self._plan()), ("phase_start", {})]
 
     def step(self, inp):
         if self.phase == "shop":

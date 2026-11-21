@@ -47,3 +47,11 @@ Toàn bộ ảnh chụp thực tế phân giải 1280×720 đã được lưu t�
   - `Ran 124 tests in 7.894s`
   - `OK` (100% tests pass, chi tiết tại [test_suite.log](../proof/phase-4/test_suite.log)).
 - Không gây ảnh hưởng hay vi phạm tính tất định của headless simulation.
+
+## Review tích hợp PR #21
+
+Đã ghép main, giữ ma trận TV5 và bổ sung kiểm chứng soak của TV2. Giới hạn tick của soak lấy từ thời lượng hai ca và Shop trong tuning. CLI trả mã 1 khi có crash, thiếu ngày hoặc ghi báo cáo lỗi, đồng thời giữ báo cáo lỗi cho hai trường hợp đầu.
+
+Bộ regression tích hợp đạt 130/130 test, gồm 5 test soak. [Log](../proof/phase-4/pr21-review.log). Manifest hiện vẫn v1.1, chưa phải cấu hình phát hành cuối.
+
+Hai lượt run_soak(seed=7, days=10) với tuning._contract_version=1.3 đều hoàn thành 10 ngày, crashes=0 và results giống nhau. Lượt đầu mất 18.1748 s. [Báo cáo v1.3](../proof/phase-4/pr21-soak-v13.json). Đây là kiểm tra trực tiếp tuning v1.3, cấu hình manifest phát hành vẫn chờ chốt.
