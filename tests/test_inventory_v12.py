@@ -32,6 +32,24 @@ from helpers import ROOT, Workdir, write_json
 
 
 class InventoryV12Tests(unittest.TestCase):
+    def test_v13_reissues_item_ids_across_days(self):
+        from chonoi.inputs import InputPlayer
+        from chonoi.runner import Session
+
+        tuning = dict(load_contract()["tuning"], _contract_version="1.3")
+        scenario = {
+            "gather": {"hold": [{"id": "I10", "kind": "ca_loc", "fresh": 80}],
+                       "random_fish": False, "monsters": [], "time_left_ticks": 1},
+            "quan": {"random_customers": False, "time_left_ticks": 1},
+        }
+        session = Session("day", tuning, scenario, 1, days=2)
+        inputs = InputPlayer([{"tick": 2, "shop_done": True}], buttons=("shop_done",))
+        for tick in range(3):
+            session.step(inputs.advance(tick))
+        state = session.snapshot()
+        self.assertEqual((state["day"], state["phase"]), (2, "gather"))
+        self.assertEqual(state["hold"], [{"id": "I11", "kind": "ca_loc", "fresh": 80}])
+
     def test_adjacent_floats_preserve_spoilage_and_price_branches(self):
         below = math.nextafter(30.0, 0.0)
         above = math.nextafter(30.0, 100.0)
@@ -58,7 +76,7 @@ class InventoryV12Tests(unittest.TestCase):
         individuals = {"hold": [{"id": "I1", "kind": "ca_loc", "fresh": 30}],
                        "monsters": [], "random_fish": False}
         with Workdir() as work:
-            for version, fixture in (("1.1", legacy), ("1.2", individuals)):
+            for version, fixture in (("1.1", legacy), ("1.2", individuals), ("1.3", individuals)):
                 contract["contract_version"] = version
                 path = write_json(work.path("contract.json"), contract)
                 tuning = load_contract(path)["tuning"]
@@ -67,7 +85,7 @@ class InventoryV12Tests(unittest.TestCase):
                     _validate_gather(individuals if version == "1.1" else legacy, tuning)
                 sim = GatherSim(tuning, fixture, Streams(1), IdAllocator())
                 emitted = sim.step(InputState((0, 0), {}, set()))
-                self.assertEqual(any(name == "spoiled" for name, _ in emitted), version == "1.2")
+                self.assertEqual(any(name == "spoiled" for name, _ in emitted), is_v12(version))
 
     def test_contract_has_freshness_and_validates_bounds(self):
         contract = load_contract()
