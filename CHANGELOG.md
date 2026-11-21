@@ -1,25 +1,28 @@
 # Changelog
-## Unreleased
 
-### Phase 3 · Schema kho cá thể v1.2 & Adapter (TV1)
-- **Breaking change (Test Contract v1.2):** File kho và cấu trúc `hold`/`stock` chuyển từ dạng đếm (`{"items":{"ca_loc":1}}`) sang mảng cá thể `{"items":[{"id":"I1","kind":"ca_loc","fresh":100}]}`; `customers[].reserved` chuyển sang mảng ID cá thể.
+## v1.0.0 (2026-11-21)
+
+### Phase 4: Phát hành v1.0.0 (Test Contract v1.3)
+- Hỗ trợ `contract_version: "1.3"` và kiểm tra `bench_cmd`, `soak_cmd` trong `chonoi/contract.py`.
+- Bổ sung `LICENSE` (MIT), cập nhật `CREDITS.md`, `CHANGELOG.md` theo từng phase và bản nháp release notes `docs/release-notes-v1.0.0.md`.
+- Còn chờ ghép từ TV2 đến TV5 trước khi gắn tag `phase-4`: `bench_cmd`, `soak_cmd`, chế độ tương phản cao cùng 3 cảnh báo, kiểm chứng clone sạch tối đa 3 lệnh và `docs/verification/phase-4.md`.
+
+### Phase 3: Mùa Nước Nổi, độ tươi và kho cá thể (Test Contract v1.2)
+- Breaking change (v1.2): file kho và cấu trúc `hold`/`stock` chuyển từ dạng đếm (`{"items":{"ca_loc":1}}`) sang mảng cá thể `{"items":[{"id":"I1","kind":"ca_loc","fresh":100}]}`; `customers[].reserved` chuyển sang mảng ID cá thể.
 - Thêm `tuning.freshness` (`initial: 100`, `gather_decay_per_s: 0.5`, `quan_decay_per_s: 0.25`, `spoiled_below: 30`) vào `game.contract.json` và kiểm tra trong `chonoi/contract.py`.
-- `chonoi/inventory.py` và `chonoi/ids.py`: thêm helper v1.2 dùng `Fraction` (chính xác trên lưới `1/240` và thập phân bất kỳ), đọc/ghi nguyên tử chọn schema theo `contract_version` (v1.2 từ chối kho đếm bằng mã `2`), lọc tươi nhất, tính giá theo độ tươi trung bình.
-- Lộ trình chuyển tiếp: `game.contract.json` tạm giữ `contract_version: "1.1"` trong khi TV2–TV4 tích hợp để bộ test P1–P2 trên `main` không đứt gãy; khi đủ các đầu sẽ bật `"1.2"`. Khi nâng lên v1.2, các fixture `hold`/`stock` dạng đếm và `reserved` dạng dict số lượng cần chuyển sang mảng cá thể/ID (mẫu tại `docs/contracts/inventory.v12.sample.json`).
+- TV1: `chonoi/inventory.py` và `chonoi/ids.py` hỗ trợ đọc/ghi nguyên tử theo `contract_version` (v1.2 từ chối kho đếm bằng mã `2`), tính độ tươi chính xác bằng `Fraction` (khôi phục lưới `1/240` qua JSON), chọn tươi nhất, tính giá theo độ tươi trung bình và `IdAllocator.reserve_all`.
+- TV2: hao tươi ca sáng (`0.5/s`), phát `spoiled` một lần theo `id_key`, cấp ID cá thể mới khi hái/bắt, `monster_hit`/`faint` trả `lost` dạng cá thể theo LIFO.
+- TV3: kho quán dạng cá thể, hao tươi (`0.25/s`) cả phần đang giữ chỗ, phát `spoiled` rồi nhả hoặc thử giữ lại theo `order_tick`/`table_id`, thiếu hàng chuyển `unfulfillable`.
+- TV4: tiêu đúng ID đã giữ khi nấu, chốt `base_price = floor(giá niêm yết × fresh TB / 100)`, boa theo giá đã chốt, giữ nguyên ID trong `day` và tiếp tục cấp ID tăng xuyên ngày; Shop và pause không hao tươi.
+- TV5: HUD độ tươi và hàng ươn, bản đồ nhỏ ca sáng, đồ họa mới, đóng quán sớm, `tools/qa_p3.py` (8 checkpoint) và `docs/verification/phase-3.md`.
 
-### Phase 3 · TV5 (UI/QA)
-- `tools/qa_p3.py`: 8 checkpoint TICKET-03 bằng CLI (CP1–CP7 chạy trên bản sao bật `contract_version 1.2` khi manifest còn 1.1), ghi `docs/proof/phase-3/qa-report.md`.
-- `tests/test_live_day.py`, `tests/test_phase1_gameplay.py`: fixture giỏ dựng theo version (mảng kind ở 1.1, mảng cá thể ở 1.2), so theo loại; thêm kiểm v1.2 bàn giao cùng tick và hàng Chợ `fresh 100` id mới. Lý do đổi: luật kho cá thể của TICKET-03, ý kiểm P1 giữ nguyên.
-- `chonoi/live_day.py`: hàng Chợ Chú Sáu nhập bằng `inventory.make_item` (bộ cấp id chung của DaySim).
-- HUD độ tươi: thanh tươi từng ô giỏ, hàng ươn viền đỏ + 🤢, "tươi TB / tươi nhất" và số ươn ở Má Tư dặn, EveningIntro, kho quán; toast `spoiled` và giá chốt theo độ tươi. Đọc được cả kho cá thể v1.2 và kho đếm v1.1.
-- Ca sáng: camera bám theo Út Sen (phím Z xem toàn cảnh), bản đồ nhỏ cả khúc sông, mũi tên chỉ bến/thủy quái ngoài khung.
-- Đồ họa mới: Út Sen, 3 loài cá, Cá Sấu, cảnh quán nhà bè (bếp lò đất có lửa, bàn khăn caro, khách theo màu).
-- Giá dự kiến theo độ tươi trên bong bóng gọi món; đồng hồ ươn ở giỏ và kho quán; hiệu ứng ươn/tươi; Má Tư chấm hàng ở EveningIntro.
-- Hướng dẫn Ngày 1 (phím H) và đóng quán sớm (phím C, event live `closed_early`, test `CloseEarlyTest`).
-- Sửa Út Sen "bơi lùi": hướng mặt lấy theo vận tốc (sim không cập nhật `heading_deg` của người chơi), nghiêng theo góc lặn, đạp chân/khoát tay; cá lật theo chiều bơi, không còn bơi ngửa bụng.
+### Phase 2: Một ngày ở chợ nổi (Test Contract v1.1)
+- Số chuẩn và ca sáng (TV1, TV2): 6 nguyên liệu (`ca_loc`, `ca_linh`, `ca_keo`, `bong_dien_dien`, `bong_sung`, `keo_neo`), nút N1 đến N6, 8 đàn cá bơi/phản xạ/đổi hướng (`120·k`)/sinh (`360·k`, trần 12), Cá Sấu Năm Chèo (`M1`, `M2` từ D3) với patrol/chase/recoil, bất tử 90 tick và rơi `floor(n/2)` LIFO.
+- Quán và vòng ngày (TV3, TV4): 6 món, 2 bếp (`B1`, `B2`), 4 bàn (`T1` đến `T4`), kế hoạch `day_plan` D1 đến D5, `--mode day` (qua ba pha `gather`, `quan`, `shop`), pause (`Esc/P`), Shop nâng cấp `oxygen`/`hp` áp dụng từ Ngày kế.
+- UI, mở rộng và QA (TV5): cửa sổ chơi trọn vòng ngày (`chonoi/live_day.py`), mở rộng Settings và âm thanh (lưu Master/Music/SFX), Chợ Chú Sáu (live), thời tiết/chuyện Má Tư/khách quen, `tools/qa_p2.py` (7 checkpoint, 60 FPS ở 1280×720).
 
-### Phase 2 · TV5 (UI/QA)
-- Cửa sổ chơi `python3 -m chonoi.live --mode day`: menu, DayIntro, HUD sáng/tối, EveningIntro, DayResult, Shop, Summary, pause (Esc/P), Cài đặt âm thanh lưu giữa các lần mở; chạy trên DaySim thật qua `chonoi/live_day.py`. Tùy chọn `--speed N` tua nhanh khi demo.
-- Sáng tạo (chỉ client/live): Chợ Chú Sáu, thời tiết theo Ngày, chuyện Má Tư kể theo uy tín, khách quen có tên, Út Sen to hơn.
-- `tools/qa_p2.py`: 7 checkpoint Phase 2 bằng CLI headless, ghi `docs/proof/phase-2/qa-report.md`.
-- `tests/test_live_day.py`: màn chờ không bước sim, handover, Shop/nâng cấp, Summary, vendor, menu + pause qua HTTP.
+### Phase 1: Hai ca chơi được (Test Contract v1.0)
+- TV1: sinh tồn ca sáng (`dive`/`surface`, oxy, `oxygen_empty`, `choke`, `faint` bỏ giỏ LIFO và xuất kho rỗng).
+- TV2: hái nút mặt nước, bắt cá dưới nước, ưu tiên bến, hòa ID, mọc lại, cooldown và xuất kho nguyên tử.
+- TV3 và TV4: lịch khách, chọn món theo seed, giữ nguyên liệu, kiên nhẫn, từ bếp ra tay tới bàn, tính boa, uy tín và quyết toán đóng ca.
+- TV5: HUD hai ca, Web Audio API, lời thoại Nam Bộ, smoke test hai tiến trình và ma trận `docs/verification/phase-1.md`.

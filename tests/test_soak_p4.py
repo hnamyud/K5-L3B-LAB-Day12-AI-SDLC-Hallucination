@@ -4,12 +4,31 @@ import json
 import subprocess
 import sys
 import unittest
+from unittest.mock import patch
 
-from chonoi.soak import run_soak
+from chonoi.soak import main, run_soak
 from helpers import Workdir, run_headless
 
 
 class SoakPhase4Tests(unittest.TestCase):
+    def test_cli_reports_crash_and_incomplete_runs_as_failure(self):
+        with Workdir() as work:
+            for completed, crashes in ((9, 0), (4, 1)):
+                report = {"days": 10, "days_completed": completed, "crashes": crashes,
+                          "results": [], "duration_s": 0.1}
+                with patch("chonoi.soak.run_soak", return_value=report):
+                    output = work.path("failed.json")
+                    self.assertEqual(main(["--seed", "7", "--out", output]), 1)
+                    with open(output, encoding="utf-8") as saved:
+                        self.assertEqual(json.load(saved), report)
+
+    def test_cli_output_error_returns_1(self):
+        with Workdir() as work:
+            report = {"days": 1, "days_completed": 1, "crashes": 0,
+                      "results": [], "duration_s": 0.1}
+            with patch("chonoi.soak.run_soak", return_value=report):
+                self.assertEqual(main(["--seed", "7", "--out", work.path(".")]), 1)
+
     def test_soak_10_days_cli_and_schema(self):
         """Chạy CLI --seed 7 --days 10: đủ 5 trường, days_completed=10, crashes=0."""
         with Workdir() as w:

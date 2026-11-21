@@ -124,7 +124,9 @@ def run_soak(seed: int, days: int, tuning=None) -> dict:
     results = []
     crashes = 0
     tick = 0
-    max_ticks = days * 25000
+    day_ticks = sum(round(tuning[phase]["duration_s"] * tuning["tick_hz"])
+                    for phase in ("gather", "quan")) + tuning["shop"]["max_ticks"]
+    max_ticks = days * day_ticks
 
     try:
         while not sim.done and tick < max_ticks:
@@ -141,8 +143,9 @@ def run_soak(seed: int, days: int, tuning=None) -> dict:
                     "reputation": round(sim.reputation, 6),
                     "score": score,
                 })
-    except Exception:
+    except Exception as error:
         crashes += 1
+        sys.stderr.write(f"soak dừng ở Ngày {sim.day}, tick {tick}: {error}\n")
 
     duration_s = round(time.perf_counter() - t0, 4)
     return {
@@ -178,12 +181,18 @@ def main(argv=None) -> int:
         sys.stderr.write(f"lỗi thực thi: {e}\n")
         return 1
 
-    out_dir = os.path.dirname(os.path.abspath(args.out))
-    if out_dir:
+    try:
+        out_dir = os.path.dirname(os.path.abspath(args.out))
         os.makedirs(out_dir, exist_ok=True)
-    with open(args.out, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(report, f, ensure_ascii=False, indent=2)
-        f.write("\n")
+        with open(args.out, "w", encoding="utf-8", newline="\n") as f:
+            json.dump(report, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+    except OSError as error:
+        sys.stderr.write(f"lỗi ghi báo cáo soak: {error}\n")
+        return 1
+    if report["crashes"] or report["days_completed"] != report["days"]:
+        sys.stderr.write("soak thất bại: có crash hoặc chưa hoàn tất đủ Ngày\n")
+        return 1
     return 0
 
 

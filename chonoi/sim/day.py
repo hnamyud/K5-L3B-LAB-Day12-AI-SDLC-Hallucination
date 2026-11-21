@@ -5,6 +5,7 @@ from copy import deepcopy
 from ..day_plan import compute_ingredients
 from ..errors import BadInput
 from ..ids import IdAllocator, sort_by_id
+from ..inventory import is_v12
 from ..scenario import _validate_gather
 from .gather import GatherSim
 from .quan import QuanSim
@@ -86,7 +87,7 @@ class DaySim:
         _validate_gather(fixture, tuning)
         self.fixture_item_ids = {}
         if (self.day > 1 and tuning.get("freshness")
-                and tuning.get("_contract_version", "1.2") == "1.2"):
+                and is_v12(tuning.get("_contract_version", "1.2"))):
             for item in fixture.get("hold", []):
                 new_id = self.ids.new("I")
                 self.fixture_item_ids[item["id"]] = new_id

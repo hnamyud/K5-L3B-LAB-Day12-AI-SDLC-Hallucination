@@ -170,6 +170,63 @@ table.hist th:first-child, table.hist td:first-child { text-align: left; }
 @keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } }
 @media (max-width: 700px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 900px) { #hud-side { width: 220px; } .chip { font-size: 18px; } #oxy { flex-basis: 180px; } }
+
+/* ---------- CHẾ ĐỘ TƯƠNG PHẢN CAO (HIGH CONTRAST) - TV5 (PHASE 4) ---------- */
+body.high-contrast {
+  --bg: #000000;
+  --card: #000000;
+  --panel: #000000;
+  --line: #ffff00;
+  --text: #ffffff;
+  --muted: #ffff55;
+  --gold: #ffff00;
+  --leaf: #00ff66;
+  --danger: #ff0033;
+  --warn: #ffea00;
+  --purple: #ff00ff;
+}
+body.high-contrast .panel,
+body.high-contrast .card,
+body.high-contrast .modal,
+body.high-contrast .toast {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffff00 !important;
+  box-shadow: 0 0 0 2px #000000, 0 0 14px rgba(255, 255, 0, 0.5) !important;
+}
+body.high-contrast button {
+  background: #000000 !important;
+  color: #ffff00 !important;
+  border: 3px solid #ffff00 !important;
+}
+body.high-contrast button.primary {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 3px solid #ffffff !important;
+  font-weight: 900 !important;
+}
+body.high-contrast #alert {
+  background: #000000 !important;
+  padding: 8px 24px !important;
+  border-radius: 12px !important;
+  border: 4px solid #ffffff !important;
+  box-shadow: 0 0 0 3px #000000, 0 0 20px #ffff00 !important;
+}
+body.high-contrast #alert.monster {
+  color: #ff00ff !important;
+  border-color: #ff00ff !important;
+}
+body.high-contrast #alert.oxy {
+  color: #ff0033 !important;
+  border-color: #ff0033 !important;
+}
+body.high-contrast #alert.angry {
+  color: #ffff00 !important;
+  border-color: #ffff00 !important;
+}
+body.high-contrast #vignette.on {
+  box-shadow: inset 0 0 0 12px #ff00ff, inset 0 0 140px 40px rgba(255, 0, 255, 0.8) !important;
+}
 </style>
 </head>
 <body>
@@ -196,7 +253,7 @@ table.hist th:first-child, table.hist td:first-child { text-align: left; }
   <div class="panel hidden" id="hint"></div>
   <div id="alert" class="hidden"></div>
   <div class="panel" id="hud-keys"></div>
-  <div class="panel hidden" id="tut"><span class="face">👵</span><div><div><span class="step" id="tut-step"></span> <span id="tut-text"></span></div><div class="dots" id="tut-dots"></div></div><span class="keys" style="margin:0;white-space:nowrap"><kbd>H</kbd>ẩn</span></div>
+  <div class="panel hidden" id="tut"><span class="face">👵</span><div><div><span class="step" id="tut-step"></span> <span id="tut-text"></span></div><div class="dots" id="tut-dots"></div></div><span class="keys" style="margin:0;white-space:nowrap"><kbd>T</kbd>ẩn</span></div>
 </div>
 <div id="toast-wrap"></div>
 <div class="panel hidden" id="fps"></div>
@@ -207,8 +264,8 @@ table.hist th:first-child, table.hist td:first-child { text-align: left; }
   <div class="kicker">Út Sen · miền Tây sông nước</div>
   <h1>Quán Ăn Chợ Nổi</h1>
   <p class="sub">Sáng lặn bắt cá, hái bông trên sông. Tối phụ Má Tư mở quán. Cuối ngày sắm đồ cho chuyến lặn sau. Năm ngày, một cái quán, bao nhiêu khách quen?</p>
-  <div class="btns"><button class="primary" id="b-play">▶ Chơi</button><button id="b-settings">⚙ Cài đặt</button><button id="b-quit">Thoát</button></div>
-  <p class="keys"><kbd>WASD</kbd>bơi/đi · <kbd>E</kbd>hái, cập bến, bếp, bàn · <kbd>Space</kbd>bắt cá · <kbd>Esc</kbd>tạm dừng</p>
+  <div class="btns"><button class="primary" id="b-play">▶ Chơi</button><button id="b-contrast-menu">🌓 Tương phản: TẮT</button><button id="b-settings">⚙ Cài đặt</button><button id="b-quit">Thoát</button></div>
+  <p class="keys"><kbd>WASD</kbd>bơi/đi · <kbd>E</kbd>hái, bến, bếp, bàn · <kbd>Space</kbd>bắt cá · <kbd>H</kbd>tương phản cao · <kbd>Esc</kbd>tạm dừng</p>
 </div></div>
 
 <div class="screen hidden" id="scr-intro"><div class="card">
@@ -266,11 +323,21 @@ table.hist th:first-child, table.hist td:first-child { text-align: left; }
   <div class="kicker">Tạm dừng</div>
   <h2>Nghỉ tay chút nghen</h2>
   <p class="sub">Đồng hồ, khách và bếp đều đứng yên.</p>
-  <div class="btns" style="flex-direction:column"><button class="primary" id="b-resume">Tiếp tục (Esc)</button><button id="b-psettings">⚙ Cài đặt</button><button id="b-menu">Về menu</button></div>
+  <div class="btns" style="flex-direction:column">
+    <button class="primary" id="b-resume">Tiếp tục (Esc)</button>
+    <button id="b-contrast-toggle">🌓 Tương phản cao: TẮT (H)</button>
+    <button id="b-psettings">⚙ Cài đặt</button>
+    <button id="b-menu">Về menu</button>
+  </div>
 </div></div>
 
 <div class="screen hidden" id="scr-settings"><div class="card" style="width:min(520px,calc(100vw - 32px))">
   <div class="kicker">Cài đặt</div>
+  <h2>Trợ năng & Giao diện</h2>
+  <label style="display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer;font-weight:700">
+    <input type="checkbox" id="chk-contrast" style="width:20px;height:20px;cursor:pointer">
+    <span>🌓 Chế độ tương phản cao (High Contrast - phím H)</span>
+  </label>
   <h2>Âm thanh</h2>
   <label class="vol">Tổng <input type="range" min="0" max="100" id="v-master"><span id="v-master-n"></span></label>
   <label class="vol">Nhạc nền <input type="range" min="0" max="100" id="v-music"><span id="v-music-n"></span></label>
@@ -363,6 +430,22 @@ function persona(orderId) {
 const GATHER_REASON = { docked: "Cập bến an toàn", time: "Hết giờ, ghe tự về", fainted: "Út Sen ngất, giỏ rơi hết" };
 const $ = (id) => document.getElementById(id);
 
+// ---------- Chế độ tương phản cao (High Contrast) - TV5 (Phase 4) ----------
+let highContrast = false;
+try { highContrast = localStorage.getItem("chonoi_high_contrast") === "1"; } catch (e) {}
+function applyContrast() {
+  document.body.classList.toggle("high-contrast", highContrast);
+  const chk = $("chk-contrast"); if (chk) chk.checked = highContrast;
+  const bp = $("b-contrast-toggle"); if (bp) bp.textContent = `🌓 Tương phản cao: ${highContrast ? "BẬT" : "TẮT"} (H)`;
+  const bm = $("b-contrast-menu"); if (bm) bm.textContent = `🌓 Tương phản: ${highContrast ? "BẬT" : "TẮT"}`;
+}
+function toggleContrast() {
+  highContrast = !highContrast;
+  try { localStorage.setItem("chonoi_high_contrast", highContrast ? "1" : "0"); } catch (e) {}
+  applyContrast();
+  toast(highContrast ? "🌓 Đã BẬT Tương phản cao" : "🌓 Đã TẮT Tương phản cao");
+}
+
 // =====================================================================================
 // Kết nối máy chủ
 // =====================================================================================
@@ -450,7 +533,8 @@ addEventListener("keydown", (e) => {
   if (scr === "summary") { if (k === "enter") startGame(); return; }
   if (k === "z") { overview = !overview; return; }
   if (k === "c" && isDay() && scr === "quan") { askClose(); return; }
-  if (k === "h") { tutOff = !tutOff; try { localStorage.setItem(TUT_KEY, tutOff ? "done" : ""); } catch (e) {} toast(tutOff ? "Đã ẩn hướng dẫn (H để bật lại)" : "Bật hướng dẫn Ngày 1"); return; }
+  if (k === "h") { toggleContrast(); return; }
+  if (k === "t") { tutOff = !tutOff; try { localStorage.setItem(TUT_KEY, tutOff ? "done" : ""); } catch (e) {} toast(tutOff ? "Đã ẩn hướng dẫn (T để bật lại)" : "Bật hướng dẫn Ngày 1"); return; }
   if (MOVE_KEYS[k]) { down.add(MOVE_KEYS[k]); e.preventDefault(); }
   else if (k === "e") down.add("interact");
   else if (k === " ") { down.add("catch"); e.preventDefault(); }
@@ -469,6 +553,9 @@ addEventListener("blur", () => { down.clear(); pushInput(); });
 function startGame() { uiScreen = null; awaitingStart = true; post("/start"); lastSent = ""; down.clear(); lastProcessedTick = -1; startMusic(); }
 function toMenu() { uiScreen = "menu"; post("/menu"); }
 $("b-play").onclick = startGame;
+$("b-contrast-menu").onclick = toggleContrast;
+$("b-contrast-toggle").onclick = toggleContrast;
+$("chk-contrast").onchange = toggleContrast;
 $("b-quit").onclick = () => { uiScreen = "bye"; stopMusic(); };
 $("b-back").onclick = () => { uiScreen = "menu"; };
 $("b-settings").onclick = () => { settingsFrom = "menu"; uiScreen = "settings"; };
@@ -971,7 +1058,17 @@ function renderHud(scene) {
       : `<div class="need"><span class="nm" style="color:var(--muted)">Kho trống</span></div>`);
     setText($("side-sum"), "");
     keys = `<kbd>WASD</kbd>đi <kbd>E</kbd>bếp/bàn ${isDay() ? "<kbd>C</kbd>đóng quán " : ""}<kbd>Esc</kbd>dừng`;
-    vis($("alert"), false); $("vignette").classList.remove("on");
+    const patMax = ((snap.meta || {}).patience_s || 60) * 60;
+    const angryCust = (snap.customers || []).find((c) => c.state !== "eating" && (c.patience_ticks_left / patMax) < 0.25);
+    const al = $("alert");
+    if (angryCust) {
+      const pp = persona(angryCust.id);
+      setText(al, `😠 ⚠ KHÁCH SẮP GIẬN! (${pp.name} ${angryCust.table_id})`);
+      al.className = "angry";
+    } else {
+      al.className = "hidden";
+    }
+    $("vignette").classList.remove("on");
     quanHint(p, hand);
   }
   setHTML($("hud-keys"), keys + (isDay() ? "" : " <kbd>R</kbd>chơi lại"));
@@ -1006,8 +1103,10 @@ function gatherAlerts(p) {
   const near = monsterNear(pos);
   $("vignette").classList.toggle("on", near);
   const al = $("alert");
-  if (near) { setText(al, "⚠ Thủy quái!"); al.className = "monster"; }
-  else if (p.oxygen_ticks === 0 && !surface) { setText(al, "Hết hơi!"); al.className = "oxy"; }
+  const oxyMax = p.oxygen_max_ticks || 600;
+  const oxyLow = !surface && p.oxygen_ticks < oxyMax * 0.25;
+  if (near) { setText(al, "🐊 ⚠ THỦY QUÁI!"); al.className = "monster"; }
+  else if (oxyLow) { setText(al, p.oxygen_ticks === 0 ? "🫁 ⚠ HẾT HƠI!" : "🫁 ⚠ OXY SẮP HẾT!"); al.className = "oxy"; }
   else al.className = "hidden";
 }
 function monsterNear(pos) {
@@ -1554,7 +1653,7 @@ function drawCustomer(c, x, y, R, s, patMax) {
   if (c.order_status === "assigned") txt("🔥", bx + BW - 50, by + 7, { size: 16 });
   const frac = c.patience_ticks_left / patMax, col = frac < .25 ? "#ff5a5f" : frac < .5 ? "#ffb347" : "#3fa84a";
   ring(bx + BW - 18, by, 10, frac, col, 4);
-  if (frac < .25) txt("😤", bx + BW - 18, by - 22, { size: 18, align: "center" });
+  if (frac < .25) txt("😠 ⚠ KHÁCH SẮP GIẬN!", bx + BW / 2, by - 26, { size: 14, align: "center", color: highContrast ? "#ffff00" : "#ff3333", weight: 900, shadow: true });
 }
 
 function drawBackdrop(w, h) {
@@ -1602,6 +1701,22 @@ function frame(now) {
   if (offline) txt("Mất kết nối tới máy chủ", w / 2, h - 40, { align: "center", color: "#ff8a80", size: 20 });
   if (snap.error) txt("Luật của nhóm báo lỗi — xem terminal.", w / 2, h - 64, { align: "center", color: "#ff8a80", size: 20 });
 }
+const mockParam = new URLSearchParams(location.search).get("mock");
+if (mockParam) {
+  highContrast = true;
+  if (mockParam === "menu") { uiScreen = "menu"; }
+  else if (mockParam === "settings") { settingsFrom = "menu"; uiScreen = "settings"; }
+  else if (mockParam === "pause") {
+    snap = { mode: "day", phase: "gather", state: "paused", day: 1, days: 5, money: 150 };
+  } else if (mockParam === "monster") {
+    snap = { mode: "day", phase: "gather", day: 2, days: 5, player: { pos: [62, 22], vel: [0, 0], oxygen_ticks: 1200, oxygen_max_ticks: 1800, hp: 3 }, monsters: [{ kind: "ca_sau", pos: [65, 23], state: "chase" }], meta: { monsters: { species: { ca_sau: { detect_radius: 10 } } } }, hold: [] };
+  } else if (mockParam === "oxy") {
+    snap = { mode: "day", phase: "gather", day: 1, days: 5, player: { pos: [30, 15], vel: [0, 0], oxygen_ticks: 0, oxygen_max_ticks: 1800, hp: 2 }, hold: [] };
+  } else if (mockParam === "angry") {
+    snap = { mode: "day", phase: "quan", day: 1, days: 5, money: 200, reputation: 3.5, player: { pos: [8, 5] }, stoves: [{ id: "B1", pos: [2, 8], state: "idle" }, { id: "B2", pos: [5, 8], state: "idle" }], tables: [{ id: "T1", pos: [9, 2] }, { id: "T2", pos: [13, 2] }], customers: [{ id: 101, table_id: "T1", state: "waiting", dish_id: "ca_loc_nuong_trui", patience_ticks_left: 120, order_status: "waiting" }], meta: { patience_s: 60 }, stock: [] };
+  }
+}
+applyContrast();
 requestAnimationFrame(frame);
 poll();
 </script>

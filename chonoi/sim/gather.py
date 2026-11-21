@@ -14,7 +14,7 @@ Các tính năng của phase sau chưa nằm trong khung này.
 import math
 
 from ..ids import id_key, sort_by_id
-from ..inventory import hold_to_items
+from ..inventory import hold_to_items, is_v12
 from .ramp import ramp_velocity
 
 TICK = 60.0
@@ -43,7 +43,7 @@ class GatherSim:
         self.zero_oxy_ticks = p.get("zero_oxy_ticks", 0)
         self.invuln_ticks = p.get("invuln_ticks", 0)
         self.catch_cd_ticks = p.get("catch_cd_ticks", 0)
-        self.freshness = tuning.get("freshness") if tuning.get("_contract_version", "1.2") == "1.2" else None
+        self.freshness = tuning.get("freshness") if is_v12(tuning.get("_contract_version", "1.2")) else None
         self._fresh_units = {}
         self.hold = self._init_hold(scenario.get("hold", []), ids)
         self.monster_tuning = t.get("monsters")
